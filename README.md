@@ -1,2 +1,7 @@
-# sermon-ai-age-study-guide
-Interactive 3D study guide: Three Spiritual Weapons (2 Cor 10:3-5) for the AI age
+# Three Spiritual Weapons: Interactive Study Guide (AI Age Edition)
+
+This is an interactive 3D study guide for a short sermon on **2 Corinthians 10:3–5** that covers three weapons: the Blood of Jesus (Rev 12:11), the Name of Jesus (Phil 2:10) and Praise (2 Chr 20).
+
+It is a static site that uses Three.js from a CDN, with no build step. Features include an animated hero scene, a clickable 3D orbit of the sermon's points, a transcript with timestamp links, a quiz, notes saved in localStorage, a progress tracker, dark and light modes, and a fallback for browsers without WebGL.
+
+Sermon quotes come from an automatic faster-whisper transcript. Material labeled "Study expansion" goes beyond the sermon.

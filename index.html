@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Three Spiritual Weapons — Interactive Study Guide for the AI Age</title>
+<meta name="description" content="An interactive 3D study guide on 2 Corinthians 10:3–5: the Blood, the Name, and Praise.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+<style>
+:root{--bg:#05070f;--bg2:#0b1022;--card:rgba(18,24,48,.72);--line:rgba(140,170,255,.18);--fg:#e8ecff;--muted:#9aa5c9;--acc:#4df0ff;--acc2:#c49bff;--gold:#ffd166;--r:16px}
+[data-theme=light]{--bg:#f4f6fc;--bg2:#e8ecf8;--card:rgba(255,255,255,.85);--line:rgba(40,60,120,.15);--fg:#141a33;--muted:#56608a;--acc:#0077b6;--acc2:#6a3fd1;--gold:#b7791f}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);transition:background .4s,color .4s}
+a{color:var(--acc)}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;display:block}
+#fallback-bg{position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% 30%,rgba(77,240,255,.18),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(196,155,255,.16),transparent 50%),var(--bg)}
+.no-webgl #bg{display:none}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:10px 20px;backdrop-filter:blur(12px);background:color-mix(in srgb,var(--bg) 70%,transparent);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;text-decoration:none;color:var(--fg);letter-spacing:.04em}
+.links{display:flex;gap:14px;flex:1}.links a{color:var(--muted);text-decoration:none;font-size:.92rem}.links a:hover{color:var(--acc)}
+.progress-wrap{position:relative;width:130px;height:8px;border-radius:9px;background:var(--line)}
+#progress-bar{height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .4s}
+#progress-label{position:absolute;right:-42px;top:-7px;font-size:.78rem;color:var(--muted)}
+#theme-toggle{margin-left:36px;background:none;border:1px solid var(--line);color:var(--fg);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1rem}
+.hero{min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 20px;position:relative}
+.hero-inner{max-width:820px}
+.eyebrow{text-transform:uppercase;letter-spacing:.25em;font-size:.75rem;color:var(--acc)}
+h1{font-size:clamp(2rem,5.5vw,3.8rem);line-height:1.08;margin:.2em 0;background:linear-gradient(120deg,var(--fg),var(--acc) 50%,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px rgba(77,240,255,.12)}
+.sub{font-size:1.2rem;color:var(--gold);margin:.3em 0}.main-text{color:var(--muted)}
+.hero-quote{margin:28px auto;padding:18px 22px;border-left:3px solid var(--gold);background:var(--card);border-radius:var(--r);text-align:left;font-style:italic;max-width:640px}
+.hero-quote cite{display:block;margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 22px;border-radius:999px;background:linear-gradient(90deg,var(--acc),var(--acc2));color:#04101a;font-weight:600;text-decoration:none;border:0;cursor:pointer;font-size:.95rem}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}.btn.small{padding:6px 14px;font-size:.85rem}
+.scroll-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:.8rem;animation:bob 2s infinite}
+@keyframes bob{50%{transform:translate(-50%,6px)}}
+.band{max-width:1000px;margin:0 auto;padding:70px 20px}
+h2{font-size:clamp(1.6rem,3.5vw,2.3rem);margin:0 0 .3em}
+.muted{color:var(--muted)}
+#orbit-stage{position:relative;height:440px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(circle at 50% 50%,rgba(77,240,255,.08),transparent 70%);overflow:hidden;touch-action:pan-y}
+#orbit-canvas{width:100%;height:100%;display:block;cursor:grab}
+#orbit-labels{position:absolute;inset:0;pointer-events:none}
+.olabel{position:absolute;transform:translate(-50%,-160%);font-size:.8rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--card);border:1px solid var(--line);white-space:nowrap;pointer-events:auto;cursor:pointer}
+.no-webgl #orbit-stage{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;font-size:.9rem}
+.chip .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.chip.done{border-color:var(--acc)}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:22px 0;overflow:hidden;backdrop-filter:blur(8px)}
+.sec>summary{list-style:none;cursor:pointer;padding:20px 24px;display:flex;align-items:center;gap:14px;font-size:1.2rem;font-weight:650}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary .num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:.9rem;color:#04101a;flex:none}
+.sec>summary .chev{margin-left:auto;transition:transform .3s;color:var(--muted)}.sec[open]>summary .chev{transform:rotate(90deg)}
+.sec-body{padding:0 24px 24px}
+.sec h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.16em;color:var(--acc);margin:24px 0 8px}
+.tag{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:999px;background:rgba(196,155,255,.18);color:var(--acc2);border:1px solid rgba(196,155,255,.35);vertical-align:middle;font-weight:600;letter-spacing:.03em}
+.quote{border-left:3px solid var(--gold);padding:6px 14px;margin:8px 0;font-style:italic}
+.quote a{font-style:normal;font-size:.8rem;margin-left:6px}
+.passage{padding:12px 16px;border-radius:12px;background:color-mix(in srgb,var(--bg2) 70%,transparent);margin:8px 0}
+.passage b{color:var(--gold)}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.word{padding:14px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 60%,transparent)}
+.word .w{font-size:1.5rem;font-family:"Times New Roman",serif;color:var(--gold)}.word .tr{font-style:italic;color:var(--acc)}
+.word .src{font-size:.75rem;color:var(--muted);margin-top:6px}
+ul.cross li{margin:3px 0}
+.mark{margin-top:20px}
+.tlist{max-height:480px;overflow:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:8px 0;margin-top:12px}
+.tline{display:flex;gap:14px;padding:5px 18px}.tline:hover{background:rgba(77,240,255,.06)}
+.tline a{font-variant-numeric:tabular-nums;font-size:.85rem;min-width:44px;text-decoration:none}
+.tline mark{background:rgba(255,209,102,.4);color:inherit}
+#tsearch,#notes-area{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit}
+.quiz-head{display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:14px 0}
+.qcard .qs{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.qcard p{font-weight:600;margin:.3em 0 .7em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;font:inherit}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.right{background:rgba(125,255,178,.18);border-color:#3ecf8e}.opt.wrong{background:rgba(255,92,122,.18);border-color:#ff5c7a}
+.notes-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;color:var(--muted);font-size:.85rem}
+.foot{max-width:1000px;margin:0 auto;padding:40px 20px 80px;font-size:.88rem;border-top:1px solid var(--line)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(4px)}
+.modal[hidden]{display:none}
+.modal-card{position:relative;max-width:640px;width:100%;max-height:85vh;overflow:auto;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:26px;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(10px)}}
+.modal .close{position:absolute;top:10px;right:14px;background:none;border:0;color:var(--fg);font-size:1.8rem;cursor:pointer}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+@media (max-width:720px){.links{display:none}.topbar{justify-content:space-between}.progress-wrap{width:90px}.opts{grid-template-columns:1fr}#orbit-stage{height:340px}.sec>summary{font-size:1.02rem;padding:16px}.sec-body{padding:0 16px 18px}.hero{min-height:84vh}}
+</style>
+<script>try{var t=localStorage.getItem('sg-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="fallback-bg" aria-hidden="true"></div>
+<header class="topbar">
+  <a class="brand" href="#top">✦ Study Guide</a>
+  <nav class="links">
+    <a href="#orbit">Points</a><a href="#study">Study</a><a href="#transcript">Transcript</a><a href="#quiz">Quiz</a><a href="#notes">Notes</a>
+  </nav>
+  <div class="progress-wrap" title="Your progress"><div id="progress-bar"></div><span id="progress-label">0%</span></div>
+  <button id="theme-toggle" aria-label="Toggle dark/light mode">◐</button>
+</header>
+
+<section id="top" class="hero">
+  <div class="hero-inner reveal">
+    <p class="eyebrow">Interactive study guide · AI age edition</p>
+    <h1 id="title"></h1>
+    <p class="sub" id="subtitle"></p>
+    <p class="main-text">Main text: <strong id="maintext"></strong></p>
+    <blockquote class="hero-quote">“The weapons we fight with are not the weapons of the world. On the contrary, they have divine power to demolish strongholds.”<cite>— as quoted in the sermon (2 Cor 10:4) · <a href="#" data-t="87" class="ts">1:27</a></cite></blockquote>
+    <div class="cta"><a class="btn" href="#orbit">Explore the points</a><a class="btn ghost" id="watch" target="_blank" rel="noopener">Watch the sermon ↗</a></div>
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</section>
+
+<section id="orbit" class="band">
+  <h2 class="reveal">The sermon's points</h2>
+  <p class="muted reveal" id="orbit-hint">Drag to rotate the orbit, then click a glowing node to open that point.</p>
+  <div id="orbit-stage"><canvas id="orbit-canvas"></canvas><div id="orbit-labels"></div></div>
+  <div id="point-chips" class="chips"></div>
+</section>
+
+<section id="study" class="band"><h2 class="reveal">Study</h2><div id="sections"></div></section>
+
+<section id="transcript" class="band">
+  <h2 class="reveal">Transcript</h2>
+  <p class="muted">Auto-transcribed with faster-whisper (English). Click a timestamp to open the video at that moment. Minor transcription errors are possible.</p>
+  <input id="tsearch" type="search" placeholder="Search the transcript…" aria-label="Search transcript">
+  <div id="tlist" class="tlist"></div>
+</section>
+
+<section id="quiz" class="band">
+  <h2 class="reveal">Quiz</h2>
+  <div class="quiz-head"><span id="score">Score: 0 / 0</span><button class="btn ghost small" id="quiz-reset">Reset</button></div>
+  <div id="quizbox"></div>
+</section>
+
+<section id="notes" class="band">
+  <h2 class="reveal">My notes</h2>
+  <p class="muted">Saved automatically in this browser (localStorage).</p>
+  <textarea id="notes-area" rows="10" placeholder="What is God showing you?"></textarea>
+  <div class="notes-foot"><span id="notes-status"></span><button class="btn ghost small" id="notes-dl">Download notes</button></div>
+</section>
+
+<footer class="foot">
+  <p id="source"></p>
+  <p class="muted">Sermon quotes come from an automatic transcript. Sections marked <span class="tag">Study expansion</span> and the background, word-study, question and application material go beyond what the sermon says. Scripture text is ESV unless noted. Word meanings are summarized from standard lexicons (BDAG, Thayer, BDB, HALOT; Strong's numbers for reference).</p>
+</footer>
+
+<div id="modal" class="modal" hidden><div class="modal-card" role="dialog" aria-modal="true"><button class="close" aria-label="Close">×</button><div id="modal-body"></div></div></div>
+
+<script src="app.js"></script>
+<script type="module" src="scene.js"></script>
+</body>
+</html>
