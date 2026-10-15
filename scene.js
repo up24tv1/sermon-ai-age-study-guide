@@ -1,5 +1,5 @@
 if(window.HAS_GL){
- import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js').then(init).catch(()=>{document.documentElement.classList.add('no-webgl');document.getElementById('orbit-hint').textContent='Choose a point below to open it.'});
+ import('three').then(init).catch(()=>{document.documentElement.classList.add('no-webgl');document.getElementById('orbit-hint').textContent='Choose a point below to open it.'});
 }
 function init(THREE){
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -68,9 +68,9 @@ function init(THREE){
   oc.addEventListener('pointermove',e=>{const h=hit(e);hover=h?h.object:null;oc.style.cursor=h?'pointer':(drag?'grabbing':'grab')});
 
   // ---------- LOOP ----------
-  let heroVis=true,orbVis=false,scrollP=0;
+  let orbVis=false,scrollP=0,heroP=0;
   new IntersectionObserver(es=>es.forEach(e=>orbVis=e.isIntersecting)).observe(stage);
-  addEventListener('scroll',()=>{scrollP=scrollY/(document.body.scrollHeight-innerHeight||1)},{passive:true});
+  const onScroll=()=>{scrollP=scrollY/(document.body.scrollHeight-innerHeight||1);heroP=Math.min(1,scrollY/(innerHeight*.75))};onScroll();addEventListener('scroll',onScroll,{passive:true});
   const tmp=new THREE.Vector3();const clock=new THREE.Clock();
   function loop(){requestAnimationFrame(loop);if(document.hidden)return;const t=clock.getElapsedTime(),sp=reduce?0:1;
     // scroll-driven: camera dives through the network, book recedes
@@ -78,7 +78,7 @@ function init(THREE){
     cam.position.x+=(mx*3-cam.position.x)*.04;cam.lookAt(0,-scrollP*6+(-my*2),0);
     net.rotation.y=t*.05*sp+scrollP*2;net.rotation.x=Math.sin(t*.1)*.1*sp;
     pts.rotation.y=t*.01*sp;book.position.y=Math.sin(t*.8)*.15*sp;book.rotation.y=Math.sin(t*.3)*.2*sp;
-    book.scale.setScalar(Math.max(.01,1-scrollP*1.8));halo.material.opacity=.6+Math.sin(t*1.5)*.2;
+    const hf=1-heroP;book.visible=hf>0.01;book.scale.setScalar(Math.max(.01,.6+.4*hf));book.children.forEach(c=>{if(c.material){c.material.transparent=true;c.material.opacity=(c===halo?(.6+Math.sin(t*1.5)*.2):(c.isGroup?1:.95))*hf}});crossMat.opacity=.9*hf;
     lm.opacity=(light()?.35:.22)+Math.sin(t*2)*.08*sp;
     r.render(scene,cam);
     if(orbVis){if(!drag){rotY+=vel;vel+=((reduce?0:.003)-vel)*.02}orbitG.rotation.y=rotY;core.rotation.y=t*.3*sp;core.rotation.x=t*.2*sp;
@@ -87,4 +87,41 @@ function init(THREE){
       or.render(os,ocam)}
   }
   loop();
+  initModels(THREE);
+}
+
+async function initModels(THREE){
+  const boxes=[...document.querySelectorAll('.model-box')];if(!boxes.length)return;
+  let libs=null;const getLibs=()=>libs||(libs=Promise.all([import('three/addons/loaders/GLTFLoader.js'),import('three/addons/loaders/RGBELoader.js')]).then(([g,r])=>{
+    const hdr=new Promise(res=>new r.RGBELoader().load(window.HDRI.url,t=>{t.mapping=THREE.EquirectangularReflectionMapping;res(t)},undefined,()=>res(null)));
+    return {GLTFLoader:g.GLTFLoader,hdr}}));
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const b=e.target;b._vis=e.isIntersecting;if(e.isIntersecting&&!b._init&&b.offsetParent){b._init=true;mount(b)}}),{rootMargin:'200px'});
+  boxes.forEach(b=>io.observe(b));
+  // <details> hides content until opened: re-check when toggled
+  document.querySelectorAll('details.sec').forEach(d=>d.addEventListener('toggle',()=>{d.querySelectorAll('.model-box').forEach(b=>{io.unobserve(b);io.observe(b)})}));
+  async function mount(box){
+    const key=box.dataset.model,m=window.MODELS[key],stat=box.querySelector('.mstat');
+    try{
+      const {GLTFLoader,hdr}=await getLibs();
+      const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,1.75));r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.15;r.outputColorSpace=THREE.SRGBColorSpace;
+      box.prepend(r.domElement);
+      const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(35,1,.01,100);
+      sc.add(new THREE.HemisphereLight(0xffffff,0x334466,1.2));const dl=new THREE.DirectionalLight(0xfff1d6,2.2);dl.position.set(2,3,2);sc.add(dl);
+      hdr.then(t=>{if(t){sc.environment=t}});
+      const mf=window.MODEL_FILES[m.id];const mgr=new THREE.LoadingManager();mgr.setURLModifier(u=>{for(const k in mf.files){if(u.endsWith(k))return mf.files[k]}return u});
+      const gltf=await new Promise((res,rej)=>new GLTFLoader(mgr).load(window.MODEL_URL(m.id),res,undefined,rej));
+      const obj=gltf.scene;const bb=new THREE.Box3().setFromObject(obj),sz=bb.getSize(new THREE.Vector3()),c=bb.getCenter(new THREE.Vector3());
+      const s=1.6/Math.max(sz.x,sz.y,sz.z);obj.scale.setScalar(s);obj.position.sub(c.multiplyScalar(s));
+      const piv=new THREE.Group();piv.add(obj);sc.add(piv);cam.position.set(0,.35,2.6);cam.lookAt(0,0,0);
+      stat.remove();
+      const size=()=>{const w=box.clientWidth,h=box.clientHeight;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};size();new ResizeObserver(size).observe(box);
+      let drag=false,lx=0,ly=0,ry=0,rx=0,auto=true;
+      r.domElement.addEventListener('pointerdown',e=>{drag=true;auto=false;lx=e.clientX;ly=e.clientY;r.domElement.setPointerCapture(e.pointerId)});
+      r.domElement.addEventListener('pointerup',()=>{drag=false;setTimeout(()=>auto=true,2500)});
+      r.domElement.addEventListener('pointermove',e=>{if(!drag)return;ry+=(e.clientX-lx)*.01;rx=Math.max(-.6,Math.min(.6,rx+(e.clientY-ly)*.01));lx=e.clientX;ly=e.clientY});
+      r.domElement.style.touchAction='pan-y';
+      const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      (function loop(){requestAnimationFrame(loop);if(!box._vis||document.hidden)return;if(auto&&!reduce)ry+=.008;piv.rotation.y=ry;piv.rotation.x=rx;r.render(sc,cam)})();
+    }catch(err){stat.textContent='3D model unavailable right now';console.warn('model load failed',m&&m.id,err)}
+  }
 }
